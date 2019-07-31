@@ -36,11 +36,11 @@ namespace TicTacToeServer.Code
 			 * 3. Pick a square at random
 			 */
 
-			/* So, breaking it down a bit... If the game can be ended by this move, then go there, either to win, or block */
+			/* So, breaking it down a bit... If the game can be ended by this move, then go there, either to win, or block. Otherwise pick a random square */
 
 			string[] nextState = m_currentState;
 
-			int winningIndex = GetGameEndingMove();
+			int winningIndex = GetGameEndingMove(MyPlayerCharacter);
 
 			if (winningIndex >= 0 && winningIndex < 9)
 			{
@@ -53,17 +53,6 @@ namespace TicTacToeServer.Code
 			}
 
 			return string.Join(',', nextState);
-		}
-
-		private string[] MakeRandomMove()
-		{
-			string[] nextState = m_currentState;
-
-			int index = FindRandomFreeSquare();
-
-			nextState[index] = MyPlayerCharacter.ToString();
-
-			return nextState;
 		}
 
 		private int FindRandomFreeSquare()
@@ -86,38 +75,77 @@ namespace TicTacToeServer.Code
 			return randomSquare;
 		}
 
-		private int GetGameEndingMove()
+		private int GetGameEndingMove(char playerToPrioritise)
 		{
 			/* Logic:
 			 * - Loop through all possible winning moves
 			 *	- if two of the squares are the same, and not empty, then move into the empty space
 			 *	- otherwise, no-one can win on that row/column/diagonal.
 			 */
+			List<PlayerMove> blockingMoves = new List<PlayerMove>();
+
 			foreach (int[] winningMove in WinningMoves)
 			{
+				if (string.IsNullOrEmpty(m_currentState[winningMove[0]]) && string.IsNullOrEmpty(m_currentState[winningMove[1]]))
+				{
+					/* two blank squares - no-one can win here */
+					continue;
+				}
+
 				if (string.IsNullOrEmpty(m_currentState[winningMove[0]]))
 				{
 					if (m_currentState[winningMove[1]].Equals(m_currentState[winningMove[2]]))
 					{
-						return winningMove[0];
+						/* who can win*/
+						if (m_currentState[winningMove[1]][0].Equals(playerToPrioritise))
+						{
+							return winningMove[0];
+						}
+						else
+						{
+							PlayerMove move = new PlayerMove(winningMove[0], m_currentState[winningMove[1]]);
+							blockingMoves.Add(move);
+						}
 					}
 				}
 				if (string.IsNullOrEmpty(m_currentState[winningMove[1]]))
 				{
 					if (m_currentState[winningMove[0]].Equals(m_currentState[winningMove[2]]))
 					{
-						return winningMove[1];
+						/* who can win*/
+						if (m_currentState[winningMove[0]][0].Equals(playerToPrioritise))
+						{
+							return winningMove[1];
+						}
+						else
+						{
+							PlayerMove move = new PlayerMove(winningMove[1], m_currentState[winningMove[0]]);
+							blockingMoves.Add(move);
+						}
 					}
 				}
 				if (string.IsNullOrEmpty(m_currentState[winningMove[2]]))
 				{
 					if (m_currentState[winningMove[0]].Equals(m_currentState[winningMove[1]]))
 					{
-						return winningMove[2];
+						/* who can win*/
+						if (m_currentState[winningMove[0]][0].Equals(playerToPrioritise))
+						{
+							return winningMove[2];
+						}
+						else
+						{
+							PlayerMove move = new PlayerMove(winningMove[2], m_currentState[winningMove[0]]);
+							blockingMoves.Add(move);
+						}
 					}
 				}
 			}
 
+			if (blockingMoves.Count > 0)
+			{
+				return blockingMoves[0].Index;
+			}
 			return -1;
 		}
 	}
