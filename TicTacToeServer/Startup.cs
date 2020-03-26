@@ -16,6 +16,7 @@ namespace TicTacToeServer
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,6 +27,21 @@ namespace TicTacToeServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllHeaders",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    //builder.AllowAnyMethod()
+                    //    .WithOrigins("http://localhost:3000",
+                    //                 "https://localhost:3000");
+                });
+            });
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +58,7 @@ namespace TicTacToeServer
             }
 
             app.UseRouting();
-
+            app.UseCors();
             app.UseHttpsRedirection();
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

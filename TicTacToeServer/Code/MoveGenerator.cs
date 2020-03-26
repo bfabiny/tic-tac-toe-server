@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicTacToeServer.Models;
 
 namespace TicTacToeServer.Code
 {
 	public class MoveGenerator
 	{
 		private string[] m_currentState;
-		private const char MyPlayerCharacter = 'O';
-		private const char OtherPlayerCharacter = 'X';
+		private char m_playerCharacter;
+		//private const char OtherPlayerCharacter = 'X';
 
 		private static List<int[]> WinningMoves = new List<int[]>
 		{
@@ -23,9 +24,10 @@ namespace TicTacToeServer.Code
 			new int[] { 2, 4, 6 }
 		};
 
-		public MoveGenerator(string currentState)
+		public MoveGenerator(CurrentState initialState)
 		{
-			m_currentState = currentState.Split(',');
+			m_currentState = initialState.CurrentBoard;
+			m_playerCharacter = initialState.NextMove;
 		}
 
 		public string DetermineNextMove()
@@ -40,16 +42,19 @@ namespace TicTacToeServer.Code
 
 			string[] nextState = m_currentState;
 
-			int winningIndex = GetGameEndingMove(MyPlayerCharacter);
+			int winningIndex = GetGameEndingMove(m_playerCharacter);
 
 			if (winningIndex >= 0 && winningIndex < 9)
 			{
-				nextState[winningIndex] = MyPlayerCharacter.ToString();
+				nextState[winningIndex] = m_playerCharacter.ToString();
 			}
 			else
 			{
 				int index = FindRandomFreeSquare();
-				nextState[index] = MyPlayerCharacter.ToString();
+				if (index > -1)
+				{
+					nextState[index] = m_playerCharacter.ToString();
+				}
 			}
 
 			return string.Join(',', nextState);
@@ -61,13 +66,14 @@ namespace TicTacToeServer.Code
 
 			List<int> squareIndexes = new List<int>(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
 
-			IEnumerable<int> randomisedIndexes = squareIndexes.OrderBy(x => new Random(DateTime.Now.Millisecond).Next());
+			var randomisedIndexes = squareIndexes.OrderBy(x => Guid.NewGuid());
 
 			for (int i = 0; i < 9; i++)
 			{
-				if (string.IsNullOrEmpty(m_currentState[randomisedIndexes.ElementAt(i)]))
+				int randomIndex = randomisedIndexes.ElementAt(i);
+				if (string.IsNullOrEmpty(m_currentState[randomIndex]))
 				{
-					randomSquare = randomisedIndexes.ElementAt(i);
+					randomSquare = randomIndex;
 					break;
 				}
 			}
@@ -86,7 +92,9 @@ namespace TicTacToeServer.Code
 
 			foreach (int[] winningMove in WinningMoves)
 			{
-				if (string.IsNullOrEmpty(m_currentState[winningMove[0]]) && string.IsNullOrEmpty(m_currentState[winningMove[1]]))
+				if ((string.IsNullOrEmpty(m_currentState[winningMove[0]]) && string.IsNullOrEmpty(m_currentState[winningMove[1]]))
+					|| (string.IsNullOrEmpty(m_currentState[winningMove[1]]) && string.IsNullOrEmpty(m_currentState[winningMove[2]]))
+					|| (string.IsNullOrEmpty(m_currentState[winningMove[0]]) && string.IsNullOrEmpty(m_currentState[winningMove[2]])))
 				{
 					/* two blank squares - no-one can win here */
 					continue;

@@ -1,5 +1,6 @@
 using System;
 using TicTacToeServer.Code;
+using TicTacToeServer.Models;
 using Xunit;
 
 namespace TicTacToeServer.Tests
@@ -9,9 +10,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenWinningMoveExistsOnRow_SelectIt()
 		{
-			string currentBoardState = "X,X,O,X,,,O,,O";
+			string[] currentBoardState = new string[] { "X", "X", "O", "X", "", "", "O", "", "O" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -22,9 +28,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenWinningMoveExistsOnColumn_SelectIt()
 		{
-			string currentBoardState = ",X,O,X,,O,X,,";
+			string[] currentBoardState = new string[] { "", "X", "O", "X", "", "O", "X", "", "" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -35,9 +46,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenWinningMoveExistsOnDiagonal_SelectIt()
 		{
-			string currentBoardState = "X,,O,,O,X,,X,";
+			string[] currentBoardState = new string[] { "X", "", "O", "", "O", "X", "", "X", "" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -48,9 +64,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenBlockingMoveExistsOnRow_SelectIt()
 		{
-			string currentBoardState = ",,O,,X,X,,,O";
+			string[] currentBoardState = new string[] { "", "", "O", "", "X", "X", "", "", "O" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -61,9 +82,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenBlockingMoveExistsOnColumn_SelectIt()
 		{
-			string currentBoardState = "O,X,,,X,O,,,";
+			string[] currentBoardState = new string[] { "O", "X", "", "", "X", "O", "", "", "" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -74,9 +100,14 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenBlockingMoveExistsOnDiagonal_SelectIt()
 		{
-			string currentBoardState = ",O,,,X,,O,,X";
+			string[] currentBoardState = new string[] { "", "O", "", "", "X", "", "O", "", "X" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
@@ -87,13 +118,36 @@ namespace TicTacToeServer.Tests
 		[Fact]
 		public void DetermineNextMove_WhenBothWinningAndBlockingMovesAvailable_PrioritiseWinningMove()
 		{
-			string currentBoardState = "X,O,,X,,X,O,,O";
+			string[] currentBoardState = new string[] { "X", "O", "", "X", "", "X", "O", "", "O" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
 
-			MoveGenerator mover = new MoveGenerator(currentBoardState);
+			MoveGenerator mover = new MoveGenerator(state);
 
 			string nextMove = mover.DetermineNextMove();
 
 			string expectedNextMove = "X,O,,X,,X,O,O,O";
+			Assert.Equal(expectedNextMove, nextMove);
+		}
+
+		[Fact]
+		public void DetermineNextMove_WhenAllSquaresPopulated_ReturnsInitialState()
+		{
+			string[] currentBoardState = new string[] { "X", "O", "X", "X", "O", "X", "O", "X", "O" };
+			CurrentState state = new CurrentState()
+			{
+				CurrentBoard = currentBoardState,
+				NextMove = 'O'
+			};
+
+			MoveGenerator mover = new MoveGenerator(state);
+
+			string nextMove = mover.DetermineNextMove();
+
+			string expectedNextMove = "X,O,X,X,O,X,O,X,O";
 			Assert.Equal(expectedNextMove, nextMove);
 		}
 	}

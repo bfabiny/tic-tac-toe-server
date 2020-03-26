@@ -1,19 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using TicTacToeServer.Code;
+using TicTacToeServer.Models;
 
 namespace TicTacToeServer.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[EnableCors("AllowAllHeaders")]
 	public class MoveController : ControllerBase
 	{
 		// GET api/move
 		[HttpGet]
 		public ActionResult<IEnumerable<string>> Get()
 		{
-			return new string[] { "value1", "value2" };
+			return new string[] { "This is the", "Tic Tac Toe server" };
 		}
 
 		// GET api/move/5
@@ -25,17 +28,20 @@ namespace TicTacToeServer.Controllers
 
 		// POST api/move
 		[HttpPost]
-		public void Post([FromBody] string value)
-		{
-		}
-
-		// POST api/move/CalculateNextMove
-		[HttpPost]
-		public ActionResult<string> CalculateNextMove([FromBody] string currentState)
+		public ActionResult<string[]> Post(CurrentState currentState)
 		{
 			MoveGenerator mover = new MoveGenerator(currentState);
 			string nextState = mover.DetermineNextMove();
-			return new ActionResult<string>(nextState);
+			return new ActionResult<string[]>(nextState.Split(','));
 		}
+
+		//// POST api/move/CalculateNextMove
+		//[HttpPost]
+		//public ActionResult<string> CalculateNextMove([FromBody] string currentState)
+		//{
+		//	MoveGenerator mover = new MoveGenerator(currentState);
+		//	string nextState = mover.DetermineNextMove();
+		//	return new ActionResult<string>(nextState);
+		//}
 	}
 }
