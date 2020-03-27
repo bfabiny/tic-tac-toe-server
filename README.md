@@ -10,4 +10,4 @@ These endpoints are supported:
 3. `POST /api/move` - Accepts a `Current State` object containing 
 - nextMove (char)
 - currentBoard (string[]) with the current state of the tic tac toe board 
-Returns a comma separated string with the new state of the tic tac toe board.
+Returns a string array with the new state of the tic tac toe board.
