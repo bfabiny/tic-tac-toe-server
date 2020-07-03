@@ -11,13 +11,6 @@ namespace TicTacToeServer.Controllers
 	[EnableCors("AllowAllHeaders")]
 	public class MoveController : ControllerBase
 	{
-		// GET api/move
-		[HttpGet]
-		public ActionResult<IEnumerable<string>> Get()
-		{
-			return new string[] { "This is the", "Tic Tac Toe server" };
-		}
-
 		// POST api/move
 		[HttpPost]
 		public ActionResult<string[]> Post(CurrentState currentState)

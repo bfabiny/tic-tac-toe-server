@@ -9,7 +9,6 @@ namespace TicTacToeServer.Code
 	{
 		private string[] m_currentState;
 		private char m_playerCharacter;
-		//private const char OtherPlayerCharacter = 'X';
 
 		private static List<int[]> WinningMoves = new List<int[]>
 		{
@@ -36,8 +35,6 @@ namespace TicTacToeServer.Code
 			 * 2. Can other player win - then block
 			 * 3. Pick a square at random
 			 */
-
-			/* So, breaking it down a bit... If the game can be ended by this move, then go there, either to win, or block. Otherwise pick a random square */
 
 			string[] nextState = m_currentState;
 
